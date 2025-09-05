@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#3F51B5</color> <!-- Indigo -->
+    <color name="colorPrimaryVariant">#303F9F</color> <!-- Dark Indigo -->
+    <color name="colorSecondary">#FF9800</color> <!-- Amber (warm accent) -->
+    <color name="colorBackground">#FFFFFF</color> <!-- White -->
+    <color name="colorTextPrimary">#212121</color> <!-- Dark gray instead of pure black -->
+    <color name="colorTextSecondary">#757575</color> <!-- Lighter gray for subtitles -->
+
+
+</resources>
