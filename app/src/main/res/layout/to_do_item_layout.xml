@@ -1,29 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:layout_marginHorizontal="@dimen/_2sdp"
     android:layout_height="wrap_content">
 
-     <CheckBox
-         android:id="@+id/done_checkBox"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:contentDescription="Mark Done" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="8dp">
 
-     <TextView
-         android:id="@+id/title_view"
-         android:layout_width="0dp"
-         android:layout_height="wrap_content"
-         android:layout_marginStart="12dp"
-         android:layout_weight="1"
-         android:textAppearance="?attr/textAppearanceBodyLarge"
-         android:text="Placeholder" />
+        <CheckBox
+            android:id="@+id/done_checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/mark_done" />
 
-     <ImageButton
-         android:id="@+id/delete_btn"
-         android:layout_width="40dp"
-         android:layout_height="40dp"
-         android:contentDescription="Delete"
-         android:background="?attr/selectableItemBackgroundBorderless"
-         android:src="@android:drawable/ic_menu_delete" />
+        <TextView
+            android:id="@+id/title_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:text="Placeholder"
+            android:textAppearance="?attr/textAppearanceBodyLarge" />
+
+        <ImageButton
+            android:id="@+id/delete_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Delete"
+            android:src="@android:drawable/ic_menu_delete" />
+
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>

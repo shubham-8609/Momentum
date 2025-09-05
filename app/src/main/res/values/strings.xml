@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Momentum</string>
+    <string name="mark_done">Mark Done</string>
 </resources>
