@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimary">#3F51B5</color> <!-- Indigo -->
-    <color name="colorPrimaryVariant">#303F9F</color> <!-- Dark Indigo -->
-    <color name="colorSecondary">#FF9800</color> <!-- Amber (warm accent) -->
-    <color name="colorBackground">#FFFFFF</color> <!-- White -->
-    <color name="colorTextPrimary">#212121</color> <!-- Dark gray instead of pure black -->
-    <color name="colorTextSecondary">#757575</color> <!-- Lighter gray for subtitles -->
 
+        <!-- Core -->
+        <color name="black">#FF000000</color>
+        <color name="white">#FFFFFFFF</color>
 
-</resources>
+        <!-- App Theme Colors -->
+        <color name="colorPrimary">#3F51B5</color> <!-- Indigo -->
+        <color name="colorPrimaryVariant">#303F9F</color> <!-- Dark Indigo -->
+        <color name="colorSecondary">#FF9800</color> <!-- Amber -->
+        <color name="colorBackground">#FFFFFF</color> <!-- App background -->
+        <color name="colorOnBackground">#212121</color>
+
+        <!-- Text -->
+        <color name="colorTextPrimary">#212121</color> <!-- Main text -->
+        <color name="colorTextSecondary">#757575</color> <!-- Subtitle / due date -->
+
+        <!-- Extra helpful colors -->
+        <color name="colorSurface">#d9d9d9</color> <!-- Cards / RecyclerView items -->
+        <color name="borderColor">#bfbfbf</color>
+        <color name="colorDivider">#E0E0E0</color> <!-- For thin lines / separators -->
+        <color name="colorError">#D32F2F</color> <!-- For delete / error messages -->
+    </resources>

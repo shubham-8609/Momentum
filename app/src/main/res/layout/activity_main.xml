@@ -1,28 +1,74 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorBackground"
     tools:context=".MainActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/activity_main_toolbaar"
+                android:layout_width="match_parent"
+                app:title="Momentum Todo"
+                app:subtitle="Good Morning"
+                app:titleTextColor="@color/colorOnBackground"
+                app:subtitleTextColor="@color/colorOnBackground"
+
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.appbar.AppBarLayout>
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/incompleted_todo_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Incomplete Todo:"
+        android:textSize="@dimen/_18ssp"
+        android:layout_margin="@dimen/_5sdp"/>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/todos_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <TextView
+        android:id="@+id/completed_todo_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Completed Todo:"
+        android:textSize="@dimen/_18ssp"
+        android:layout_margin="@dimen/_5sdp"/>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/completed_todo_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_todo_dialog_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="@dimen/_16sdp"
-        android:layout_marginBottom="@dimen/_16sdp"
-        android:src="@drawable/outline_add_24"
-        />
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/_16sdp"
+        android:contentDescription="Add Todo"
+        android:backgroundTint="?attr/colorPrimary"
+        android:src="@drawable/outline_add_24" />
 
-</RelativeLayout>
+</LinearLayout>

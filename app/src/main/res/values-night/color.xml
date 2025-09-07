@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorBackground">#333333</color> <!-- App background -->
+    <color name="colorSurface">#4d4d4d</color> <!-- Cards / RecyclerView items -->
+    <color name="borderColor">#666666</color>
+    <color name="colorOnBackground">#d9d9d9</color>
+
+
+</resources>

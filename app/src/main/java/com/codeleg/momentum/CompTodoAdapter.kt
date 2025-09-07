@@ -13,44 +13,41 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 
-class ToDoAdapter(
+class CompTodoAdapter(
     private val context: Context,
     private val listener: TodoItemInteractionListener,
     private val dataList: MutableList<ToDoModal>
-) : RecyclerView.Adapter<ToDoAdapter.ViewHolder>() {
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): ViewHolder {
+) : RecyclerView.Adapter<CompTodoAdapter.ViewHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.to_do_item_layout, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(
-        holder: ViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val todo = dataList[position]
         holder.titleText.text = todo.title
 
         // Temporarily remove listener to prevent it firing during programmatic setChecked
         holder.checkBox.setOnCheckedChangeListener(null)
-        // Set the state based on the model (should be false for active todos)
+        // Set the state based on the model (should be true for completed items)
         holder.checkBox.isChecked = todo.isDone
         updateStrikeThrough(holder.titleText, todo.isDone)
 
         // Set the listener for user interactions
         holder.checkBox.setOnCheckedChangeListener { _, isCheckedByUser ->
+            // isCheckedByUser is the NEW state of the checkbox after user interaction
             val currentPosition = holder.adapterPosition
             if (currentPosition == RecyclerView.NO_POSITION) {
                 return@setOnCheckedChangeListener
             }
-            val currentItem = dataList[currentPosition]
+            val currentItem = dataList[currentPosition] // Use currentItem
 
-            if (isCheckedByUser) { // If the user checks the item
-                listener.onTodoItemChecked(currentItem, currentPosition)
+            if (!isCheckedByUser) { // If the user unchecks the item
+                listener.onCompletedItemUnchecked(currentItem, currentPosition)
             }
-            // If !isCheckedByUser, user unchecks an active todo. It remains active.
+            // If isCheckedByUser is true, it means the user is trying to check an item
+            // that's already in the completed list. It's already complete.
             // No state change or list transfer action is needed here from this adapter.
             // The MainActivity handles the logic if an item is moved.
         }
@@ -58,7 +55,6 @@ class ToDoAdapter(
         holder.deleteBtn.setOnClickListener {
             val currentPosition = holder.adapterPosition
             if (currentPosition == RecyclerView.NO_POSITION) return@setOnClickListener
-
             dataList.removeAt(currentPosition)
             notifyItemRemoved(currentPosition)
         }
@@ -69,7 +65,7 @@ class ToDoAdapter(
             val editTodoTitleTextView: TextView = dialog.findViewById(R.id.edit_todo_title_input)
             val editTodoSaveBtn: AppCompatButton = dialog.findViewById(R.id.save_todo_btn)
             val editTodoCancelBtn: AppCompatButton = dialog.findViewById(R.id.cancel_edit_btn)
-
+            
             // Ensure position is still valid before accessing dataList
             val currentPosition = holder.adapterPosition
             if (currentPosition == RecyclerView.NO_POSITION) {
@@ -90,7 +86,6 @@ class ToDoAdapter(
             editTodoCancelBtn.setOnClickListener {
                 dialog.dismiss()
             }
-
             dialog.show()
         }
     }

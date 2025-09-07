@@ -1,7 +1,9 @@
 <resources>
     <!-- Base application theme for dark mode. -->
     <style name="Theme.Momentum.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:fontFamily">@font/allerta</item>
         <!-- Customize your dark theme here. -->
         <!-- For example, <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+
 </resources>

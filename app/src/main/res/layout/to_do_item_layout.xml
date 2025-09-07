@@ -7,9 +7,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/item_bg"
         android:orientation="horizontal"
+        android:layout_margin="@dimen/_2sdp"
         android:gravity="center_vertical"
-        android:padding="8dp">
+        android:padding="@dimen/_5sdp">
+
+
 
         <CheckBox
             android:id="@+id/done_checkBox"
@@ -21,14 +25,27 @@
             android:id="@+id/title_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textColor="@color/colorOnBackground"
             android:layout_marginStart="12dp"
             android:layout_weight="1"
             android:text="Placeholder"
             android:textAppearance="?attr/textAppearanceBodyLarge" />
 
+    <ImageButton
+        android:id="@+id/edit_btn"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Edit Todo"
+
+        android:src="@drawable/edit_square_24"/>
+
+
+
         <ImageButton
             android:id="@+id/delete_btn"
             android:layout_width="40dp"
+            android:backgroundTint="@color/borderColor"
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Delete"
