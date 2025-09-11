@@ -59,8 +59,12 @@ class ToDoAdapter(
             val currentPosition = holder.adapterPosition
             if (currentPosition == RecyclerView.NO_POSITION) return@setOnClickListener
 
-            dataList.removeAt(currentPosition)
-            notifyItemRemoved(currentPosition)
+            listener.onAttemptDelete { confirmed ->
+                if (confirmed) {
+                    dataList.removeAt(currentPosition)
+                    notifyItemRemoved(currentPosition)
+                }
+            }
         }
 
         holder.editBtn.setOnClickListener {

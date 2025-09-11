@@ -1,56 +1,51 @@
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:id="@+id/main"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBackground"
     tools:context=".MainActivity">
 
     <LinearLayout
-        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/colorBackground">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary">
 
-            <com.google.android.material.appbar.AppBarLayout
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/activity_main_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/activity_main_toolbaar"
-                    android:layout_width="match_parent"
-                    app:title="Momentum Todo"
-                    app:subtitle="Good Morning"
-                    android:background="@color/colorPrimary"
-                    app:titleTextColor="@color/colorOnBackground"
-                    app:subtitleTextColor="@color/colorOnBackground"
-                    android:layout_height="wrap_content"/>
-            </com.google.android.material.appbar.AppBarLayout>
+                android:layout_height="wrap_content"
+                app:subtitle="Good Morning"
+                app:title="Momentum"
+                app:titleTextColor="@color/colorOnBackground"
+                app:subtitleTextColor="@color/colorOnBackground" />
 
-        </LinearLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/incompleted_todo_heading_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_5sdp"
-            app:cardElevation="@dimen/_2sdp"
+            app:cardElevation="@dimen/_10sdp"
             app:cardCornerRadius="@dimen/_4sdp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Incomplete Todo:"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_17ssp"
                 android:padding="@dimen/_8sdp"
                 android:textColor="?android:attr/textColorPrimary" />
-
         </com.google.android.material.card.MaterialCardView>
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/todos_recycler_view"
@@ -74,12 +69,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Completed Todo:"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_17ssp"
                 android:padding="@dimen/_8sdp"
                 android:textColor="?android:attr/textColorPrimary" />
-
         </com.google.android.material.card.MaterialCardView>
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/completed_todo_recycler"

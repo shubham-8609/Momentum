@@ -6,7 +6,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.Visibility
 import com.codeleg.momentum.CompTodoAdapter.ViewHolder
 import com.codeleg.momentum.databinding.ActivityMainBinding
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlin.random.Random
 
@@ -37,6 +40,7 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
     private lateinit var completedTodoHeading: CardView
     private lateinit var inCompletedTodoHeading: CardView
     private lateinit var toolbar: Toolbar;
+    private var dontAskAgainDelete = false;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +82,11 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         dialog.setContentView(R.layout.add_todo_layout)
         val editTextTitle = dialog.findViewById<EditText>(R.id.todo_title_input)
         val addButton: AppCompatButton = dialog.findViewById(R.id.add_todo_btn)
+        val cancelButton: MaterialButton = dialog.findViewById(R.id.add_todo_cancel_btn)
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
 
         addButton.setOnClickListener {
             val newTodoTitle = editTextTitle?.text.toString().trim()
@@ -166,6 +175,42 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         checkLayout();
 
     }
+
+    override fun onAttemptDelete(callback: (Boolean) -> Unit) {
+        if (dontAskAgainDelete) {
+            callback(true)
+        } else {
+            showConfirmDeleteDialog(callback)
+        }
+    }
+
+    private fun showConfirmDeleteDialog(callback: (Boolean) -> Unit) {
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_confirm_delete)
+
+        val dontAskAgainCheckbox = dialog.findViewById<CheckBox>(R.id.dont_ask_again_checkbox)
+        val cancelButton = dialog.findViewById<com.google.android.material.button.MaterialButton>(R.id.delete_confirm_dialog_cancel_button)
+        val confirmButton = dialog.findViewById<com.google.android.material.button.MaterialButton>(R.id.delete_todo_dialog_confirm_button)
+
+        dontAskAgainCheckbox.isChecked = dontAskAgainDelete
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+            callback(false) // user cancelled
+        }
+
+        confirmButton.setOnClickListener {
+            if (dontAskAgainCheckbox.isChecked) {
+                dontAskAgainDelete = true
+            }
+            dialog.dismiss()
+            callback(true) // user confirmed delete
+        }
+
+        dialog.show()
+    }
+
+
     private fun checkLayout(){
         if (completedTodoItems.isEmpty()){
             completedTodoHeading.visibility = View.GONE
@@ -187,43 +232,15 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         }
     }
     private fun setToolbar(){
-        toolbar = binding.activityMainToolbaar
+        toolbar = binding.activityMainToolbar
         setSupportActionBar(toolbar)
         supportActionBar
 
     }
-//    fun editLogic(holder: ViewHolder){
-//        val dialog = Dialog(context)
-//        dialog.setContentView(R.layout.edit_todo_layout)
-//        val editTodoTitleTextView: TextView = dialog.findViewById(R.id.edit_todo_title_input)
-//        val editTodoSaveBtn: AppCompatButton = dialog.findViewById(R.id.save_todo_btn)
-//        val editTodoCancelBtn: AppCompatButton = dialog.findViewById(R.id.cancel_edit_btn)
-//
-//        val currentPosition = holder.adapterPosition
-//        if (currentPosition == RecyclerView.NO_POSITION) {
-//            dialog.dismiss()
-//
-//        }
-//        editTodoTitleTextView.text = dataList[currentPosition].title
-//
-//        editTodoSaveBtn.setOnClickListener {
-//            val updatedTitle = editTodoTitleTextView.text.toString()
-//            val itemPosition = holder.adapterPosition // Re-fetch position, could change
-//            if (itemPosition != RecyclerView.NO_POSITION) {
-//                dataList[itemPosition].title = updatedTitle
-//                notifyItemChanged(itemPosition)
-//            }
-//            dialog.dismiss()
-//        }
-//        editTodoCancelBtn.setOnClickListener {
-//            dialog.dismiss()
-//        }
-//        dialog.show()
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.activity_main_menu, menu) // Use the activity's menuInflater
-        return true // Explicitly return true to display the menu
+        menuInflater.inflate(R.menu.activity_main_menu, menu)
+        return true
     }
 
 

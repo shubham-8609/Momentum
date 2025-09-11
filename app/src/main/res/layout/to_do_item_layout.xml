@@ -37,7 +37,6 @@
         android:layout_height="@dimen/_20sdp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Edit Todo"
-
         android:src="@drawable/edit_square_24"/>
 
 
@@ -46,6 +45,8 @@
             android:id="@+id/delete_btn"
             android:layout_width="40dp"
             android:backgroundTint="@color/borderColor"
+
+
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Delete"

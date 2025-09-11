@@ -1,41 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:scrollbars="vertical"
-    android:requiresFadingEdge="vertical"
-    android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:weightSum="1.0"
+    android:gravity="center_horizontal"> <!-- Center the weighted content if the parent is wider -->
+
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_background"
         android:orientation="vertical"
-        android:gravity="center"
-        android:layout_height="match_parent">
+        android:padding="@dimen/_16sdp">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Todo.."
-            android:textSize="@dimen/_20sdp"
-            android:textStyle="bold"
-            android:layout_marginVertical="@dimen/_20sdp"/>
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/_16sdp"
+            android:text="Add Todo"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="?attr/colorOnSurface" />
 
-        <EditText
-            android:id="@+id/todo_title_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapSentences"
-            android:hint="Sample Todo"
-            android:textAlignment="center"
-            android:textSize="@dimen/_15sdp"/>
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/add_todo_btn"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/todo_title_input_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/_5sdp"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:text="Add"/>
+            android:hint="Title">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/todo_title_input"
+                android:layout_width="@dimen/_180sdp"
+                android:layout_height="wrap_content"
+                android:ems="50"
+                android:inputType="textCapSentences"
+                android:maxLines="1" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:gravity="center">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_todo_cancel_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?attr/materialButtonOutlinedStyle"
+                android:gravity="center_vertical"
+                android:text="Cancel"
+                android:textSize="@dimen/_12ssp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add_todo_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:gravity="center"
+                android:text="Add"
+                android:textSize="@dimen/_12ssp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
 
-</ScrollView>
+</LinearLayout>
