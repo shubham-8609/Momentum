@@ -1,5 +1,6 @@
 package com.codeleg.momentum
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.view.Menu
@@ -25,6 +26,7 @@ import com.codeleg.momentum.CompTodoAdapter.ViewHolder
 import com.codeleg.momentum.databinding.ActivityMainBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
@@ -41,6 +43,8 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
     private lateinit var inCompletedTodoHeading: CardView
     private lateinit var toolbar: Toolbar;
     private var dontAskAgainDelete = false;
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +74,8 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         completedTodoHeading = binding.completedTodoHeadingCard
         inCompletedTodoHeading = binding.incompletedTodoHeadingCard
 
+
+
         distributeInitialData()
 
         addTodoBtn.setOnClickListener {
@@ -77,6 +83,7 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     private fun showAddTodoDialog() {
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.add_todo_layout)
@@ -97,7 +104,12 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
                 inCompletedTodoRecycler.scrollToPosition(incompletedTodoItems.size - 1)
                 dialog.dismiss()
             } else {
-                Toast.makeText(this, "Title cannot be empty", Toast.LENGTH_SHORT).show()
+//
+                val snackbar  = Snackbar.make(binding.root , "Title cannot be empty" , Snackbar.LENGTH_SHORT)
+                    snackbar.setAction("Dimiss"){
+                        snackbar.dismiss()
+                    }
+                snackbar.show()
             }
         }
         dialog.show()

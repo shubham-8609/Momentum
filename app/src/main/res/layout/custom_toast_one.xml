@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/dialog_background"
+    android:gravity="center"
+    android:padding="@dimen/_5sdp"
+    >
+
+    <ImageView
+        android:id="@+id/custom_toast_iamge_view"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:src="@drawable/failure"/>
+
+    <TextView
+        android:id="@+id/custom_toast_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="This is dummy text.."
+        android:layout_marginStart="@dimen/_10sdp"/>
+
+</LinearLayout>

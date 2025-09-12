@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 
 class CompTodoAdapter(
     private val context: Context,
@@ -55,8 +56,13 @@ class CompTodoAdapter(
         holder.deleteBtn.setOnClickListener {
             val currentPosition = holder.adapterPosition
             if (currentPosition == RecyclerView.NO_POSITION) return@setOnClickListener
-            dataList.removeAt(currentPosition)
-            notifyItemRemoved(currentPosition)
+
+            listener.onAttemptDelete { confirmed ->
+                if (confirmed) {
+                    dataList.removeAt(currentPosition)
+                    notifyItemRemoved(currentPosition)
+                }
+            }
         }
 
         holder.editBtn.setOnClickListener {
@@ -65,6 +71,10 @@ class CompTodoAdapter(
         holder.titleText.setOnClickListener {
             editLogic(holder)
         }
+    }
+
+    fun checkEmpty(textView: TextView):Boolean{
+        return textView.text.toString().trim().isNotEmpty()
     }
 
      fun editLogic(holder: ViewHolder){
@@ -82,13 +92,19 @@ class CompTodoAdapter(
         editTodoTitleTextView.text = dataList[currentPosition].title
 
         editTodoSaveBtn.setOnClickListener {
-            val updatedTitle = editTodoTitleTextView.text.toString()
-            val itemPosition = holder.adapterPosition // Re-fetch position, could change
-            if (itemPosition != RecyclerView.NO_POSITION) {
-                dataList[itemPosition].title = updatedTitle
-                notifyItemChanged(itemPosition)
+            if(checkEmpty(editTodoTitleTextView)){
+                val updatedTitle = editTodoTitleTextView.text.toString()
+                val itemPosition = holder.adapterPosition // Re-fetch position, could change
+                if (itemPosition != RecyclerView.NO_POSITION) {
+                    dataList[itemPosition].title = updatedTitle
+                    notifyItemChanged(itemPosition)
+                }
+                dialog.dismiss()
+            }else{
+                Snackbar.make(holder.itemView , "Todo cannot be empty.." , Snackbar.LENGTH_SHORT).show()
+                
             }
-            dialog.dismiss()
+
         }
         editTodoCancelBtn.setOnClickListener {
             dialog.dismiss()

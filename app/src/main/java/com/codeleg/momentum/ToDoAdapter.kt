@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 
 class ToDoAdapter(
     private val context: Context,
@@ -68,21 +69,33 @@ class ToDoAdapter(
         }
 
         holder.editBtn.setOnClickListener {
-            val dialog = Dialog(context)
-            dialog.setContentView(R.layout.edit_todo_layout)
-            val editTodoTitleTextView: TextView = dialog.findViewById(R.id.edit_todo_title_input)
-            val editTodoSaveBtn: AppCompatButton = dialog.findViewById(R.id.save_todo_btn)
-            val editTodoCancelBtn: AppCompatButton = dialog.findViewById(R.id.cancel_edit_btn)
+            editLogic(holder)
+        }
+        holder.titleText.setOnClickListener {
+            editLogic(holder)
+        }
 
-            // Ensure position is still valid before accessing dataList
-            val currentPosition = holder.adapterPosition
-            if (currentPosition == RecyclerView.NO_POSITION) {
-                dialog.dismiss()
-                return@setOnClickListener
-            }
-            editTodoTitleTextView.text = dataList[currentPosition].title
 
-            editTodoSaveBtn.setOnClickListener {
+    }
+
+
+    fun editLogic(holder: ToDoAdapter.ViewHolder){
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.edit_todo_layout)
+        val editTodoTitleTextView: TextView = dialog.findViewById(R.id.edit_todo_title_input)
+        val editTodoSaveBtn: AppCompatButton = dialog.findViewById(R.id.save_todo_btn)
+        val editTodoCancelBtn: AppCompatButton = dialog.findViewById(R.id.cancel_edit_btn)
+
+        val currentPosition = holder.adapterPosition
+        if (currentPosition == RecyclerView.NO_POSITION) {
+            dialog.dismiss()
+
+        }
+        editTodoTitleTextView.text = dataList[currentPosition].title
+
+        editTodoSaveBtn.setOnClickListener {
+
+            if(checkEmpty(editTodoTitleTextView)){
                 val updatedTitle = editTodoTitleTextView.text.toString()
                 val itemPosition = holder.adapterPosition // Re-fetch position, could change
                 if (itemPosition != RecyclerView.NO_POSITION) {
@@ -90,14 +103,18 @@ class ToDoAdapter(
                     notifyItemChanged(itemPosition)
                 }
                 dialog.dismiss()
-            }
-            editTodoCancelBtn.setOnClickListener {
-                dialog.dismiss()
+            }else{
+                Snackbar.make(holder.itemView , "Todo cannot be empty.." , Snackbar.LENGTH_SHORT).show()
             }
 
-            dialog.show()
+
         }
+        editTodoCancelBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
     }
+
 
     override fun getItemCount(): Int = dataList.size
 
@@ -108,6 +125,9 @@ class ToDoAdapter(
             textView.paintFlags = textView.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
         }
     }
+    fun checkEmpty(textView: TextView):Boolean{
+        return textView.text.toString().trim().isNotEmpty()
+    }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleText: TextView = itemView.findViewById(R.id.title_view)
@@ -115,4 +135,5 @@ class ToDoAdapter(
         val deleteBtn: ImageButton = itemView.findViewById(R.id.delete_btn)
         val editBtn: ImageView = itemView.findViewById(R.id.edit_btn)
     }
+
 }
