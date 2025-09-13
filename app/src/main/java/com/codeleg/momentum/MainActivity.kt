@@ -25,6 +25,7 @@ import androidx.transition.Visibility
 import com.codeleg.momentum.CompTodoAdapter.ViewHolder
 import com.codeleg.momentum.databinding.ActivityMainBinding
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlin.random.Random
@@ -37,10 +38,10 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
     private val incompletedTodoItems: MutableList<ToDoModal> = mutableListOf()
     private lateinit var toDoAdapter: ToDoAdapter
     private lateinit var completedTodoAdapter: CompTodoAdapter
-    private lateinit var addTodoBtn: FloatingActionButton
+    private lateinit var addTodoBtn: ExtendedFloatingActionButton
     private lateinit var completedTodoRecycler: RecyclerView
-    private lateinit var completedTodoHeading: CardView
-    private lateinit var inCompletedTodoHeading: CardView
+    private lateinit var completedTodoHeading: TextView
+    private lateinit var inCompletedTodoHeading: TextView
     private lateinit var toolbar: Toolbar;
     private var dontAskAgainDelete = false;
 
@@ -71,8 +72,8 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         completedTodoRecycler.layoutManager = LinearLayoutManager(this)
         completedTodoAdapter = CompTodoAdapter(this, this, completedTodoItems)
         completedTodoRecycler.adapter = completedTodoAdapter
-        completedTodoHeading = binding.completedTodoHeadingCard
-        inCompletedTodoHeading = binding.incompletedTodoHeadingCard
+        completedTodoHeading = binding.completedHeader
+        inCompletedTodoHeading = binding.incompleteHeader
 
 
 

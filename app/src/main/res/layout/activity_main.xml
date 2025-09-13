@@ -1,99 +1,215 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
-    android:id="@+id/main"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
+    android:background="@drawable/bg_gradient"
     tools:context=".MainActivity">
+    <!-- App bar -->
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.Material3.Dark"
+        android:elevation="@dimen/_4sdp"
+        >
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/activity_main_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@drawable/custom_toolbar_bg"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:title="Momentum"
+            app:subtitle="Good Morning"
+            app:titleTextColor="?attr/colorOnPrimary"
+            app:subtitleTextColor="?attr/colorOnPrimary"
+            app:menu="@menu/activity_main_menu"
+
+            />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingBottom="88dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+       >
 
-        <com.google.android.material.appbar.AppBarLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/_12sdp"
+            android:paddingTop="@dimen/_12sdp">
 
-            android:background="@color/colorPrimary">
-
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/activity_main_toolbar"
+            <!-- Summary card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:subtitle="Good Morning"
-                app:title="Momentum"
-                app:titleTextColor="@color/colorOnBackground"
-                app:subtitleTextColor="@color/colorOnBackground" />
+                app:cardElevation="6dp"
+                app:cardCornerRadius="12dp"
+                android:layout_marginBottom="@dimen/_12sdp"
+                android:padding="@dimen/_12sdp">
 
-        </com.google.android.material.appbar.AppBarLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:padding="@dimen/_8sdp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/incompleted_todo_heading_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/_5sdp"
-            app:cardElevation="@dimen/_10sdp"
-            app:cardCornerRadius="@dimen/_4sdp">
+                    <TextView
+                        android:id="@+id/todo_summary_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your tasks"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"/>
 
-            <TextView
-                android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginTop="6dp">
+
+                        <TextView
+                            android:id="@+id/todo_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="5 active • 3 done"
+                            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                            android:layout_weight="1"/>
+
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/todo_progress"
+                            style="?attr/linearProgressIndicatorStyle"
+                            android:layout_width="120dp"
+                            android:layout_height="6dp"
+                            android:progress="40"
+                            android:indeterminate="false"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Search + filter row -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Incomplete Todo:"
-                android:textSize="@dimen/_17ssp"
-                android:padding="@dimen/_8sdp"
-                android:textColor="?android:attr/textColorPrimary" />
-        </com.google.android.material.card.MaterialCardView>
+                android:orientation="vertical"
+                android:layout_marginBottom="@dimen/_8sdp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/todos_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/colorBackground"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/search_input_layout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Search tasks">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/completed_todo_heading_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/_5sdp"
-            android:layout_marginVertical="@dimen/_15sdp"
-            app:cardElevation="@dimen/_2sdp"
-            app:cardCornerRadius="@dimen/_4sdp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/search_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:imeOptions="actionSearch"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/filter_chips"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    app:singleSelection="true"
+                    app:chipSpacing="6dp">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_all"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="All"
+                        android:checked="true"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_active"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Active"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_completed"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Completed"/>
+                </com.google.android.material.chip.ChipGroup>
+
+            </LinearLayout>
+
+            <!-- Incomplete header -->
             <TextView
-                android:id="@+id/completed_todo_heading"
-                android:layout_width="wrap_content"
+                android:id="@+id/incomplete_header"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Completed Todo:"
-                android:textSize="@dimen/_17ssp"
-                android:padding="@dimen/_8sdp"
-                android:textColor="?android:attr/textColorPrimary" />
-        </com.google.android.material.card.MaterialCardView>
+                android:text="Incomplete"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_6sdp"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/completed_todo_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/colorBackground"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            <!-- Incomplete list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/todos_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_350sdp"
+                android:nestedScrollingEnabled="true"
+                android:clipToPadding="false"
+                android:paddingBottom="@dimen/_4sdp"/>
 
-    </LinearLayout>
+            <!-- Completed header -->
+            <TextView
+                android:id="@+id/completed_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Completed"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:paddingTop="@dimen/_12sdp"
+                android:paddingBottom="@dimen/_6sdp"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <!-- Completed list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/completed_todo_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_350sdp"
+                android:nestedScrollingEnabled="true"
+                android:clipToPadding="false" />
+
+            <!-- Empty space so FAB doesn't hide content on small screens -->
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Add todo button -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/add_todo_dialog_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/_16sdp"
+        android:layout_gravity="bottom|end"
+        android:text="Add"
+        android:icon="@drawable/outline_add_24"
+        app:backgroundTint="?attr/colorPrimary"
+        app:iconTint="?attr/colorOnPrimary"
         android:contentDescription="Add Todo"
-        android:backgroundTint="@color/colorPrimary"
-        android:src="@drawable/outline_add_24"
-        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior" />
+        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"/>
+    <!-- Optional: small bottom gradient/overlay to hint more content -->
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

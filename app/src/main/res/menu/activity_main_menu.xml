@@ -8,12 +8,7 @@
         android:icon="@drawable/outline_add_24"
         android:title="New Todo"
         app:showAsAction="ifRoom"/>
-        <item
-            android:id="@+id/search_todo_option"
-            android:iconTint="@android:color/white"
-            android:icon="@drawable/outline_manage_search_24"
-            android:title="Search Todo"
-            app:showAsAction="ifRoom"/>
+
         <item
             android:id="@+id/settings_option"
             android:icon="@drawable/baseline_settings_24"

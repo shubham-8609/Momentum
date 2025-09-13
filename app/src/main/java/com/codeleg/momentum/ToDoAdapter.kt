@@ -7,11 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import android.widget.ImageButton
-import android.widget.ImageView
+
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.snackbar.Snackbar
 
 class ToDoAdapter(
@@ -132,8 +132,8 @@ class ToDoAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleText: TextView = itemView.findViewById(R.id.title_view)
         val checkBox: CheckBox = itemView.findViewById(R.id.done_checkBox)
-        val deleteBtn: ImageButton = itemView.findViewById(R.id.delete_btn)
-        val editBtn: ImageView = itemView.findViewById(R.id.edit_btn)
+        val deleteBtn: ShapeableImageView = itemView.findViewById(R.id.delete_btn)
+        val editBtn: ShapeableImageView = itemView.findViewById(R.id.edit_btn)
     }
 
 }
