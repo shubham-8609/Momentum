@@ -6,7 +6,7 @@
     <gradient
         android:startColor="?attr/colorPrimary"
         android:endColor="@color/borderColor"
-        android:angle="270"
+        android:angle="180"
          />
 
     <padding android:bottom="4dp"/>

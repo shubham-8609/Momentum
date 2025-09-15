@@ -6,15 +6,14 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.CheckBox
-
-
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.snackbar.Snackbar
-
 class CompTodoAdapter(
     private val context: Context,
     private val listener: TodoItemInteractionListener,
@@ -43,15 +42,11 @@ class CompTodoAdapter(
             if (currentPosition == RecyclerView.NO_POSITION) {
                 return@setOnCheckedChangeListener
             }
-            val currentItem = dataList[currentPosition] // Use currentItem
-
-            if (!isCheckedByUser) { // If the user unchecks the item
+            val currentItem = dataList[currentPosition]
+            if (!isCheckedByUser) {
                 listener.onCompletedItemUnchecked(currentItem, currentPosition)
             }
-            // If isCheckedByUser is true, it means the user is trying to check an item
-            // that's already in the completed list. It's already complete.
-            // No state change or list transfer action is needed here from this adapter.
-            // The MainActivity handles the logic if an item is moved.
+
         }
 
         holder.deleteBtn.setOnClickListener {
@@ -128,5 +123,10 @@ class CompTodoAdapter(
         val checkBox: CheckBox = itemView.findViewById(R.id.done_checkBox)
         val deleteBtn: ShapeableImageView = itemView.findViewById(R.id.delete_btn)
         val editBtn: ShapeableImageView = itemView.findViewById(R.id.edit_btn)
+    }
+
+    private fun animateTodo(view:View){
+        val anim: Animation = AnimationUtils.loadAnimation(context , R.anim.item_insert_anim)
+        view.startAnimation(anim)
     }
 }
