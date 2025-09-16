@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         setupRecyclerViews()
         loadInitialData()
         setupFab()
+        updateProgress()
 
         binding.filterChips.setOnCheckedChangeListener { group, checkedId ->
           filterTodo(group , checkedId)
@@ -176,7 +177,8 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         }
         val done = completedTodos.size
         todoProgress.progress = (done.toFloat() / total * 100).toInt()
-        todoCount.text = "${total - done} active • $done done"
+        val todoCountText = "${total - done} active • $done done"
+        todoCount.text = todoCountText
     }
 
     private fun generateRandomId() = Random.nextInt(100000, 999999)
@@ -232,6 +234,7 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
                 R.id.chip_all -> {
                     // Show active items if they exist
                     binding.incompleteHeader.visibility = if (activeTodos.isNotEmpty()) View.VISIBLE else View.GONE
+
                     binding.todosRecyclerView.visibility = binding.incompleteHeader.visibility
                     // Show completed items if they exist
                     binding.completedHeader.visibility = if (completedTodos.isNotEmpty()) View.VISIBLE else View.GONE

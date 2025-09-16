@@ -125,8 +125,5 @@ class CompTodoAdapter(
         val editBtn: ShapeableImageView = itemView.findViewById(R.id.edit_btn)
     }
 
-    private fun animateTodo(view:View){
-        val anim: Animation = AnimationUtils.loadAnimation(context , R.anim.item_insert_anim)
-        view.startAnimation(anim)
-    }
+
 }
