@@ -1,15 +1,11 @@
 package com.codeleg.momentum
 
 import android.Manifest
-import android.app.Dialog
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
@@ -21,54 +17,54 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.codeleg.momentum.DialogHelper.showAddTodoDialog
 import com.codeleg.momentum.databinding.ActivityMainBinding
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.snackbar.Snackbar
 import kotlin.random.Random
 
+sealed class TodoFilter(val key: String) {
+    object All : TodoFilter("all")
+    object Active : TodoFilter("active")
+    object Completed : TodoFilter("completed")
+
+    companion object {
+        fun fromKey(key: String): TodoFilter = when (key) {
+            "active" -> Active
+            "completed" -> Completed
+            else -> All
+        }
+    }
+}
+
 class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
 
-    private lateinit var binding: ActivityMainBinding
-
-    private val completedTodos = mutableListOf<ToDoModal>()
-    private val activeTodos = mutableListOf<ToDoModal>()
-
+      lateinit var binding: ActivityMainBinding
     private lateinit var activeAdapter: ToDoAdapter
     private lateinit var completedAdapter: CompTodoAdapter
+    private lateinit var nm: NotificationManager
+    private lateinit var pref: SharedPreferences
 
+    private val activeTodos = mutableListOf<ToDoModal>()
+    private val completedTodos = mutableListOf<ToDoModal>()
     private var dontAskAgainDelete = false
+    private var currentFilter: TodoFilter = TodoFilter.All
+
     private val TODO_INFO_CHANNEL_ID = "todo_info_channel"
     private val TODO_INFO_CHANNEL_NAME = "Todo Reminder"
-    private  val NOTIFICATION_PERMISSION_REQUEST_CODE = 123
+    private val NOTIFICATION_PERMISSION_REQUEST_CODE = 123
 
     private companion object {
-
         private val initialItems = listOf(
             ToDoModal("First Todo", 1, true),
             ToDoModal("Second Todo", 2, true),
             ToDoModal("Third Todo", 3, false),
             ToDoModal("Fourth Todo", 4, true),
-            ToDoModal("Fifth Todo", 5, false),
-            ToDoModal("Sixth Todo", 6, true),
-            ToDoModal("Seventh Todo", 7, false),
-            ToDoModal("Eighth Todo", 8, true),
-            ToDoModal("Ninth Todo", 9, false),
-            ToDoModal("Tenth Todo", 10, true),
-            ToDoModal("Eleventh Todo", 11, false),
-            ToDoModal("Twelfth Todo", 12, true),
-            ToDoModal("Thirteenth Todo", 13, false),
-            ToDoModal("Fourteenth Todo", 14, true),
-            ToDoModal("Fifteenth Todo", 15, false),
-            ToDoModal("Sixteenth Todo", 16, true),
-            ToDoModal("Seventeenth Todo", 17, false),
-            ToDoModal("Eighteenth Todo", 18, true),
-            ToDoModal("Nineteenth Todo", 19, false),
-            ToDoModal("Twentieth Todo", 20, true)
+            ToDoModal("Fifth Todo", 5, false)
+            // add more if needed
         )
     }
 
@@ -78,19 +74,29 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        pref = getSharedPreferences("settings", MODE_PRIVATE)
+
+        checkData()
         setupEdgeToEdge()
         setupToolbar()
         setupRecyclerViews()
         loadInitialData()
         setupFab()
-        updateProgress()
-        showNotification()
+        updateUI()
+        setupFilterChips()
 
-        binding.filterChips.setOnCheckedChangeListener { group, checkedId ->
-            filterTodo(group, checkedId)
-        }
+        requestNotificationPermission()
+    }
 
-        requestNotificationPermissionAndShow()
+    override fun onDestroy() {
+        super.onDestroy()
+        nm.notify(1, buildNotification())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        nm.cancel(1)
     }
 
     private fun setupEdgeToEdge() {
@@ -119,93 +125,94 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
     }
 
     private fun setupFab() = with(binding) {
-        addTodoDialogBtn.setOnClickListener { showAddTodoDialog() }
+        addTodoDialogBtn.setOnClickListener {
+            DialogHelper.showAddTodoDialog(this@MainActivity) { todo ->
+                addTodo(todo)
+            }
+        }
+    }
+
+    private fun setupFilterChips() {
+        binding.filterChips.setOnCheckedChangeListener { _, checkedId ->
+            val newFilter = when (checkedId) {
+                R.id.chip_active -> TodoFilter.Active
+                R.id.chip_completed -> TodoFilter.Completed
+                else -> TodoFilter.All
+            }
+            if (newFilter != currentFilter) {
+                saveFilterState(newFilter)
+                updateUIVisibility()
+            }
+        }
     }
 
     private fun loadInitialData() {
         initialItems.forEach { if (it.isDone) completedTodos.add(it) else activeTodos.add(it) }
         activeAdapter.notifyDataSetChanged()
         completedAdapter.notifyDataSetChanged()
-        updateUIVisibility()
-    }
-
-    private fun showAddTodoDialog() {
-        Dialog(this).apply {
-            setContentView(R.layout.add_todo_layout)
-            val titleInput = findViewById<EditText>(R.id.todo_title_input)
-            findViewById<View>(R.id.add_todo_cancel_btn).setOnClickListener { dismiss() }
-            findViewById<View>(R.id.add_todo_btn).setOnClickListener {
-                val title = titleInput.text.toString().trim()
-                if (title.isEmpty()) {
-                    Snackbar.make(binding.root, "Title cannot be empty", Snackbar.LENGTH_SHORT)
-                        .setAction("Dismiss") { }
-                        .show()
-                } else {
-                    addTodo(ToDoModal(title, generateRandomId(), false))
-                    dismiss()
-                }
-            }
-            show()
-        }
+        updateUI()
     }
 
     private fun addTodo(todo: ToDoModal) {
         activeTodos.add(todo)
         activeAdapter.notifyItemInserted(activeTodos.size - 1)
         binding.todosRecyclerView.scrollToPosition(activeTodos.size - 1)
-        updateProgress()
-        updateUIVisibility()
+        updateUI()
     }
 
-    override fun onTodoItemChecked(item: ToDoModal, position: Int) {
-        moveItemBetweenLists(activeTodos, completedTodos, position, activeAdapter, completedAdapter)
-    }
+    override fun onTodoItemChecked(item: ToDoModal, position: Int) =
+        toggleTodoState(activeTodos, completedTodos, position, activeAdapter, completedAdapter)
 
-    override fun onCompletedItemUnchecked(item: ToDoModal, position: Int) {
-        moveItemBetweenLists(completedTodos, activeTodos, position, completedAdapter, activeAdapter)
-    }
+    override fun onCompletedItemUnchecked(item: ToDoModal, position: Int) =
+        toggleTodoState(completedTodos, activeTodos, position, completedAdapter, activeAdapter)
 
-    private fun moveItemBetweenLists(
+    private fun toggleTodoState(
         from: MutableList<ToDoModal>,
         to: MutableList<ToDoModal>,
         pos: Int,
         fromAdapter: androidx.recyclerview.widget.RecyclerView.Adapter<*>,
         toAdapter: androidx.recyclerview.widget.RecyclerView.Adapter<*>
     ) {
-        if (pos !in from.indices) return
-        val item = from.removeAt(pos).apply { isDone = !isDone }
-        fromAdapter.notifyItemRemoved(pos)
-        to.add(item)
-        toAdapter.notifyItemInserted(to.size - 1)
+        from.getOrNull(pos)?.let { item ->
+            item.isDone = !item.isDone
+            from.removeAt(pos).also {
+                fromAdapter.notifyItemRemoved(pos)
+                to.add(it)
+                toAdapter.notifyItemInserted(to.size - 1)
+            }
+        }
+        updateUI()
+    }
+
+    override fun onAttemptDelete(callback: (Boolean) -> Unit) {
+        if (dontAskAgainDelete) {
+            callback(true)
+        } else {
+            DialogHelper.showConfirmDeleteDialog(this, pref) { confirmed, dontAsk ->
+                if (confirmed) {
+                    dontAskAgainDelete = dontAsk
+                    callback(true)
+                } else {
+                    callback(false)
+                }
+            }
+        }
+    }
+
+    private fun updateUI() {
         updateProgress()
         updateUIVisibility()
     }
 
-    override fun onAttemptDelete(callback: (Boolean) -> Unit) {
-        if (dontAskAgainDelete) callback(true) else showConfirmDeleteDialog(callback)
-        updateUIVisibility()
-    }
-
-    private fun showConfirmDeleteDialog(callback: (Boolean) -> Unit) {
-        Dialog(this).apply {
-            setContentView(R.layout.dialog_confirm_delete)
-            val dontAsk = findViewById<CheckBox>(R.id.dont_ask_again_checkbox)
-            findViewById<View>(R.id.delete_confirm_dialog_cancel_button).setOnClickListener {
-                dismiss(); callback(false)
-            }
-            findViewById<View>(R.id.delete_todo_dialog_confirm_button).setOnClickListener {
-                dontAskAgainDelete = dontAsk.isChecked
-                dismiss(); callback(true)
-            }
-            show()
-        }
-    }
-
     private fun updateUIVisibility() = with(binding) {
-        completedHeader.visibility = if (completedTodos.isNotEmpty()) View.VISIBLE else View.GONE
-        completedTodoRecycler.visibility = completedHeader.visibility
-        incompleteHeader.visibility = if (activeTodos.isNotEmpty()) View.VISIBLE else View.GONE
-        todosRecyclerView.visibility = incompleteHeader.visibility
+        val showActive = activeTodos.isNotEmpty() && (currentFilter is TodoFilter.All || currentFilter is TodoFilter.Active)
+        val showCompleted = completedTodos.isNotEmpty() && (currentFilter is TodoFilter.All || currentFilter is TodoFilter.Completed)
+
+        incompleteHeader.visibility = if (showActive) View.VISIBLE else View.GONE
+        todosRecyclerView.visibility = if (showActive) View.VISIBLE else View.GONE
+
+        completedHeader.visibility = if (showCompleted) View.VISIBLE else View.GONE
+        completedTodoRecycler.visibility = if (showCompleted) View.VISIBLE else View.GONE
     }
 
     private fun updateProgress() = with(binding) {
@@ -217,70 +224,53 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         }
         val done = completedTodos.size
         todoProgress.progress = (done.toFloat() / total * 100).toInt()
-        val todoCountText = "${total - done} active • $done done"
-        todoCount.text = todoCountText
+        todoCount.text = "${total - done} active • $done done"
     }
 
-    private fun generateRandomId() = Random.nextInt(100000, 999999)
 
-    override fun onCreateOptionsMenu(menu: Menu?) = menuInflater.inflate(R.menu.activity_main_menu, menu).let { true }
+
+    override fun onCreateOptionsMenu(menu: Menu?) =
+        menuInflater.inflate(R.menu.activity_main_menu, menu).let { true }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.add_todo_option -> showAddTodoDialog()
+            R.id.add_todo_option -> {
+                DialogHelper.showAddTodoDialog(this@MainActivity) { todo ->
+                    addTodo(todo)
+                }
+            }
             R.id.exit_option -> finishAffinity()
-            R.id.settings_option -> Snackbar.make(binding.root, "This feature isn't available.", Snackbar.LENGTH_SHORT)
-                .setAction("Dismiss") {}.show()
+            R.id.settings_option -> Snackbar.make(binding.root, "This feature isn’t available.", Snackbar.LENGTH_SHORT).show()
             R.id.ask_question_option -> {
                 val intent = Intent(Intent.ACTION_SEND)
                     .setType("message/rfc822")
-                    .putExtra(Intent.EXTRA_EMAIL , arrayOf("shubhamgupta8609@gmail.com"))
-                    .putExtra(Intent.EXTRA_SUBJECT , "Ask Question form Momentum")
-                    .putExtra(Intent.EXTRA_TEXT , "Hello developers , I want to ask a question about your app Momentum..")
-                 startActivity(Intent.createChooser(intent, "Send email using..."))
+                    .putExtra(Intent.EXTRA_EMAIL, arrayOf("shubhamgupta8609@gmail.com"))
+                    .putExtra(Intent.EXTRA_SUBJECT, "Ask Question from Momentum")
+                    .putExtra(Intent.EXTRA_TEXT, "Hello developers, I want to ask a question about your app Momentum..")
+                try {
+                    startActivity(Intent.createChooser(intent, "Send email using..."))
+                } catch (e: Exception) {
+                    Snackbar.make(binding.root, "No app found to send email.", Snackbar.LENGTH_SHORT).show()
+                }
+            }
+            R.id.contact_us_option -> {
+                val intent = Intent(Intent.ACTION_SENDTO)
+                    .setData(Uri.parse("smsto:" + Uri.encode("+919082871979")))
+                    .putExtra("sms_body", "Hello developer, [Your Query..]")
+                try {
+                startActivity(intent)
+                }catch(e: java.lang.Exception){
+                    Snackbar.make(binding.root, "No app found to send SMS.", Snackbar.LENGTH_SHORT).show()
+                }
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    private fun filterTodo(group: ChipGroup, checkedId: Int) {
-        when (checkedId) {
-            R.id.chip_all -> {
-                binding.incompleteHeader.visibility = if (activeTodos.isNotEmpty()) View.VISIBLE else View.GONE
-                binding.todosRecyclerView.visibility = binding.incompleteHeader.visibility
-                binding.completedHeader.visibility = if (completedTodos.isNotEmpty()) View.VISIBLE else View.GONE
-                binding.completedTodoRecycler.visibility = binding.completedHeader.visibility
-            }
-            R.id.chip_active -> {
-                binding.incompleteHeader.visibility = if (activeTodos.isNotEmpty()) View.VISIBLE else View.GONE
-                binding.todosRecyclerView.visibility = binding.incompleteHeader.visibility
-                binding.completedHeader.visibility = View.GONE
-                binding.completedTodoRecycler.visibility = View.GONE
-            }
-            R.id.chip_completed -> {
-                binding.completedHeader.visibility = if (completedTodos.isNotEmpty()) View.VISIBLE else View.GONE
-                binding.completedTodoRecycler.visibility = binding.completedHeader.visibility
-                binding.incompleteHeader.visibility = View.GONE
-                binding.todosRecyclerView.visibility = View.GONE
-            }
-            else -> {
-                binding.incompleteHeader.visibility = if (activeTodos.isNotEmpty()) View.VISIBLE else View.GONE
-                binding.todosRecyclerView.visibility = binding.incompleteHeader.visibility
-                binding.completedHeader.visibility = if (completedTodos.isNotEmpty()) View.VISIBLE else View.GONE
-                binding.completedTodoRecycler.visibility = binding.completedHeader.visibility
-            }
-        }
-    }
-
-    private fun requestNotificationPermissionAndShow() {
+    private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             when {
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED -> {
-
-                }
+                ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED -> Unit
                 shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
                     Snackbar.make(binding.root, "Notification permission is required to show alerts.", Snackbar.LENGTH_LONG)
                         .setAction("Grant") {
@@ -299,43 +289,46 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
                     )
                 }
             }
-        } else {
-            // Permission not required for older versions, proceed to show notification
-//            showAppNotification()
         }
     }
 
-
-    private fun showNotification(){
-        val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        if(Build.VERSION.SDK_INT  >= Build.VERSION_CODES.O){
-            val reminderChannel = NotificationChannel(TODO_INFO_CHANNEL_ID , TODO_INFO_CHANNEL_NAME ,
-                NotificationManager.IMPORTANCE_DEFAULT)
-            nm.createNotificationChannel(reminderChannel)
+    private fun buildNotification(): Notification {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    TODO_INFO_CHANNEL_ID,
+                    TODO_INFO_CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
+            )
         }
 
-        val notificationBuilder = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder(this , TODO_INFO_CHANNEL_ID)
-        }else{
-            Notification.Builder(this)
-        }
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0, Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
 
-        val pendingIntent = PendingIntent.getActivity(this , 0 , Intent(this , MainActivity::class.java) ,
-            PendingIntent.FLAG_IMMUTABLE )
-
-        notificationBuilder.setSmallIcon(R.drawable.app_icon)
+        return Notification.Builder(this, TODO_INFO_CHANNEL_ID)
+            .setSmallIcon(R.drawable.app_icon)
             .setContentTitle("Todo Reminder")
-            .setContentText("Complete your todos and to release Dopaimine")
+            .setContentText("Complete your todos and release dopamine")
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
-            val todoReminderNotification = notificationBuilder.build()
-            val notificationId = 1;
-
-        nm.notify(notificationId , todoReminderNotification )
-
+            .build()
     }
 
+    private fun checkData() {
+        dontAskAgainDelete = pref.getBoolean("delete_flag", false)
+        currentFilter = TodoFilter.fromKey(pref.getString("filter", "all") ?: "all")
+        when (currentFilter) {
+            TodoFilter.All -> binding.filterChips.check(R.id.chip_all)
+            TodoFilter.Active -> binding.filterChips.check(R.id.chip_active)
+            TodoFilter.Completed -> binding.filterChips.check(R.id.chip_completed)
+        }
+    }
 
+    private fun saveFilterState(state: TodoFilter) {
+        pref.edit().putString("filter", state.key).apply()
+        currentFilter = state
+    }
 }
-

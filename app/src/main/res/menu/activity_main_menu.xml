@@ -21,6 +21,10 @@
                 android:iconTint="@color/colorOnBackground"
             android:title="Ask Question"/>
     <item
+            android:id="@+id/contact_us_option"
+                android:iconTint="@color/colorOnBackground"
+            android:title="Contact Us"/>
+    <item
         android:id="@+id/exit_option"
         android:iconTint="@color/colorOnBackground"
         android:icon="@drawable/outline_exit_to_app_24"
