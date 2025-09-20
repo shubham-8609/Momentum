@@ -14,10 +14,16 @@
             android:icon="@drawable/baseline_settings_24"
             android:iconTint="@color/colorOnBackground"
             android:title="Settings"/>
-            <item
-            android:id="@+id/exit_option"
+
+
+    <item
+            android:id="@+id/ask_question_option"
                 android:iconTint="@color/colorOnBackground"
-            android:icon="@drawable/outline_exit_to_app_24"
-            android:title="Exit"/>
+            android:title="Ask Question"/>
+    <item
+        android:id="@+id/exit_option"
+        android:iconTint="@color/colorOnBackground"
+        android:icon="@drawable/outline_exit_to_app_24"
+        android:title="Exit"/>
 
 </menu>

@@ -44,9 +44,10 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
     private var dontAskAgainDelete = false
     private val TODO_INFO_CHANNEL_ID = "todo_info_channel"
     private val TODO_INFO_CHANNEL_NAME = "Todo Reminder"
+    private  val NOTIFICATION_PERMISSION_REQUEST_CODE = 123
 
     private companion object {
-        private const val NOTIFICATION_PERMISSION_REQUEST_CODE = 123
+
         private val initialItems = listOf(
             ToDoModal("First Todo", 1, true),
             ToDoModal("Second Todo", 2, true),
@@ -230,6 +231,14 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
             R.id.exit_option -> finishAffinity()
             R.id.settings_option -> Snackbar.make(binding.root, "This feature isn't available.", Snackbar.LENGTH_SHORT)
                 .setAction("Dismiss") {}.show()
+            R.id.ask_question_option -> {
+                val intent = Intent(Intent.ACTION_SEND)
+                    .setType("message/rfc822")
+                    .putExtra(Intent.EXTRA_EMAIL , arrayOf("shubhamgupta8609@gmail.com"))
+                    .putExtra(Intent.EXTRA_SUBJECT , "Ask Question form Momentum")
+                    .putExtra(Intent.EXTRA_TEXT , "Hello developers , I want to ask a question about your app Momentum..")
+                 startActivity(Intent.createChooser(intent, "Send email using..."))
+            }
         }
         return super.onOptionsItemSelected(item)
     }
