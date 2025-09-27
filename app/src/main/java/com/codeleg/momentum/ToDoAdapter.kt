@@ -17,7 +17,8 @@ import com.google.android.material.snackbar.Snackbar
 class ToDoAdapter(
     private val context: Context,
     private val listener: TodoItemInteractionListener,
-    private val dataList: MutableList<ToDoModal>
+    private val dataList: MutableList<ToDoModal>,
+    private val DBHelper: DatabaseHelper
 ) : RecyclerView.Adapter<ToDoAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -63,6 +64,7 @@ class ToDoAdapter(
             listener.onAttemptDelete { confirmed ->
                 if (confirmed) {
                     dataList.removeAt(currentPosition)
+                    DBHelper.delete(todo.id)
                     notifyItemRemoved(currentPosition)
                 }
             }
@@ -100,6 +102,7 @@ class ToDoAdapter(
                 val itemPosition = holder.adapterPosition // Re-fetch position, could change
                 if (itemPosition != RecyclerView.NO_POSITION) {
                     dataList[itemPosition].title = updatedTitle
+                    DBHelper.update(dataList[itemPosition] , title = updatedTitle)
                     notifyItemChanged(itemPosition)
                 }
                 dialog.dismiss()

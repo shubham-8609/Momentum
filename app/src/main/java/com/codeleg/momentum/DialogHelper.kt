@@ -24,7 +24,7 @@ object DialogHelper {
                 if (title.isEmpty()) {
                     Snackbar.make(context.binding.root, "Title cannot be empty", Snackbar.LENGTH_SHORT).show()
                 } else {
-                    onAdd(ToDoModal(title,  generateRandomId(), false))
+                    onAdd(ToDoModal(title , generateRandomId() ,   false))
                     dismiss()
                 }
             }

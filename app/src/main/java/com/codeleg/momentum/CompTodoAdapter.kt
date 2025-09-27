@@ -6,8 +6,6 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
@@ -17,7 +15,8 @@ import com.google.android.material.snackbar.Snackbar
 class CompTodoAdapter(
     private val context: Context,
     private val listener: TodoItemInteractionListener,
-    private val dataList: MutableList<ToDoModal>
+    private val dataList: MutableList<ToDoModal>,
+    private val DBHelper: DatabaseHelper
 ) : RecyclerView.Adapter<CompTodoAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -56,6 +55,8 @@ class CompTodoAdapter(
             listener.onAttemptDelete { confirmed ->
                 if (confirmed) {
                     dataList.removeAt(currentPosition)
+                    DBHelper.delete(todo.id)
+
                     notifyItemRemoved(currentPosition)
                 }
             }
@@ -93,6 +94,7 @@ class CompTodoAdapter(
                 val itemPosition = holder.adapterPosition // Re-fetch position, could change
                 if (itemPosition != RecyclerView.NO_POSITION) {
                     dataList[itemPosition].title = updatedTitle
+                    DBHelper.update(dataList[itemPosition] , title = updatedTitle)
                     notifyItemChanged(itemPosition)
                 }
                 dialog.dismiss()

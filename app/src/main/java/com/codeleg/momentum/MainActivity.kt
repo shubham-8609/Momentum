@@ -56,17 +56,12 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
     private val TODO_INFO_CHANNEL_ID = "todo_info_channel"
     private val TODO_INFO_CHANNEL_NAME = "Todo Reminder"
     private val NOTIFICATION_PERMISSION_REQUEST_CODE = 123
+     val DBHelper = DatabaseHelper(this)
+    private var isDataAdded = false
 
-    private companion object {
-        private val initialItems = listOf(
-            ToDoModal("First Todo", 1, true),
-            ToDoModal("Second Todo", 2, true),
-            ToDoModal("Third Todo", 3, false),
-            ToDoModal("Fourth Todo", 4, true),
-            ToDoModal("Fifth Todo", 5, false)
-            // add more if needed
-        )
-    }
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,17 +76,12 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         setupEdgeToEdge()
         setupToolbar()
         setupRecyclerViews()
-        loadInitialData()
         setupFab()
         updateUI()
         setupFilterChips()
-
+        manageDB()
         requestNotificationPermission()
-    }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        nm.notify(1, buildNotification())
     }
 
     override fun onResume() {
@@ -114,12 +104,12 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
     private fun setupRecyclerViews() = with(binding) {
         todosRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            activeAdapter = ToDoAdapter(this@MainActivity, this@MainActivity, activeTodos)
+            activeAdapter = ToDoAdapter(this@MainActivity, this@MainActivity, activeTodos, DBHelper)
             adapter = activeAdapter
         }
         completedTodoRecycler.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            completedAdapter = CompTodoAdapter(this@MainActivity, this@MainActivity, completedTodos)
+            completedAdapter = CompTodoAdapter(this@MainActivity, this@MainActivity, completedTodos , DBHelper)
             adapter = completedAdapter
         }
     }
@@ -146,19 +136,22 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         }
     }
 
-    private fun loadInitialData() {
-        initialItems.forEach { if (it.isDone) completedTodos.add(it) else activeTodos.add(it) }
-        activeAdapter.notifyDataSetChanged()
-        completedAdapter.notifyDataSetChanged()
-        updateUI()
-    }
+
 
     private fun addTodo(todo: ToDoModal) {
-        activeTodos.add(todo)
+        // ✅ save to DB
+        DBHelper.addTodo(todo.title)
+
+        // Refresh from DB so we get the auto-generated ID
+        val todos = DBHelper.fetchData()
+        val newTodo = todos.last() // last inserted
+
+        activeTodos.add(newTodo)
         activeAdapter.notifyItemInserted(activeTodos.size - 1)
         binding.todosRecyclerView.scrollToPosition(activeTodos.size - 1)
         updateUI()
     }
+
 
     override fun onTodoItemChecked(item: ToDoModal, position: Int) =
         toggleTodoState(activeTodos, completedTodos, position, activeAdapter, completedAdapter)
@@ -175,6 +168,9 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
     ) {
         from.getOrNull(pos)?.let { item ->
             item.isDone = !item.isDone
+            // ✅ update database with new state
+            DBHelper.update(item, isChecked = item.isDone)
+
             from.removeAt(pos).also {
                 fromAdapter.notifyItemRemoved(pos)
                 to.add(it)
@@ -183,6 +179,7 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
         }
         updateUI()
     }
+
 
     override fun onAttemptDelete(callback: (Boolean) -> Unit) {
         if (dontAskAgainDelete) {
@@ -320,15 +317,52 @@ class MainActivity : AppCompatActivity(), TodoItemInteractionListener {
     private fun checkData() {
         dontAskAgainDelete = pref.getBoolean("delete_flag", false)
         currentFilter = TodoFilter.fromKey(pref.getString("filter", "all") ?: "all")
+        isDataAdded = pref.getBoolean("isDataAdded" , false)
         when (currentFilter) {
             TodoFilter.All -> binding.filterChips.check(R.id.chip_all)
             TodoFilter.Active -> binding.filterChips.check(R.id.chip_active)
             TodoFilter.Completed -> binding.filterChips.check(R.id.chip_completed)
         }
+
+
+    }
+
+    private fun manageDB(){
+        if(!isDataAdded){
+    DBHelper.addTodo("Drink water 1")
+        DBHelper.addTodo("Drink water 2")
+        DBHelper.addTodo("Drink water 3")
+        DBHelper.addTodo("Drink water 4")
+        DBHelper.addTodo("Drink water 5")
+        DBHelper.addTodo("Drink water 6")
+        DBHelper.addTodo("Drink water 7")
+        DBHelper.addTodo("Drink water 8")
+        DBHelper.addTodo("Drink water 9")
+        DBHelper.addTodo("Drink water 10")
+        DBHelper.addTodo("Drink water 11")
+        DBHelper.addTodo("Drink water 12")
+        DBHelper.addTodo("Drink water 13")
+        DBHelper.addTodo("Drink water 14")
+        DBHelper.addTodo("Drink water 15")
+        DBHelper.addTodo("Drink water 16")
+        DBHelper.addTodo("Drink water 17")
+        DBHelper.addTodo("Drink water 18")
+        DBHelper.addTodo("Drink water 19")
+        DBHelper.addTodo("Drink water 20")
+            pref.edit().putBoolean("isDataAdded" , true).apply()
+    }
+        var restoredTodos = ArrayList<ToDoModal>()
+            val todos = DBHelper.fetchData()
+            todos.forEach { if(it.isDone) completedTodos.add(it) else activeTodos.add(it) }
+        activeAdapter.notifyDataSetChanged()
+        completedAdapter.notifyDataSetChanged()
+        updateUIVisibility()
     }
 
     private fun saveFilterState(state: TodoFilter) {
         pref.edit().putString("filter", state.key).apply()
         currentFilter = state
     }
+
+
 }
